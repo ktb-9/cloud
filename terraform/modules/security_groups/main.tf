@@ -33,7 +33,15 @@ resource "aws_security_group" "eks_node_group_sg" {
   name        = "${var.cluster_name}-node-group-sg"
   description = "Security group for EKS worker nodes"
 
-  # 노드 그룹의 기본 포트 (Kubernetes API 서버 통신)
+  # 노드 그룹에서 API 서버로의 통신을 허용
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # 노드 간 통신을 허용 (1025-65535 포트)
   ingress {
     from_port   = 1025
     to_port     = 65535
