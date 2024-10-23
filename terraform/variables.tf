@@ -40,3 +40,43 @@ variable "cluster_name" {
   type        = string
   default     = "ktb9-eks-cluster"
 }
+
+variable "subnet_group_name" {
+  description = "The name of the RDS subnet group"
+  type = string
+  default = "ktb9-rds-subnet-group"
+}
+
+variable "allocated_storage" {
+  description = "The allocated storage size for RDS"
+  type        = number
+  default     = 20
+}
+
+variable "engine" {
+  description = "The database engine for RDS"
+  type        = string
+  default     = "mysql"
+}
+
+variable "db_identifier" {
+  description = "The unique identifier for the RDS instance"
+  type        = string
+  default     = "ktb9-rds-instance"
+}
+
+variable "db_name" {
+  description = "The name of the database for RDS"
+  type        = string
+  default     = "ktb9db"
+}
+
+variable "username" {
+  description = "The username for the RDS database"
+  type        = string
+}
+
+variable "password" {
+  description = "The password for the RDS database"
+  type        = string
+}

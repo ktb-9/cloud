@@ -44,3 +44,45 @@ module "eks" {
   max_capacity     = 3
   instance_type    = "t3.micro"
 }
+
+module "s3_bucket" {
+  source = "./modules/s3"
+
+  bucket_name            = "ktb9-bucket"
+  environment            = "devel"
+  block_public_acls      = false
+  block_public_policy    = false
+  ignore_public_acls     = false
+  restrict_public_buckets = false
+  bucket_policy = <<POLICY
+{
+  "Version":"2012-10-17",
+  "Statement":[
+    {
+      "Sid":"PublicRead",
+      "Effect":"Allow",
+      "Principal": "*",
+      "Action":["s3:GetObject"],
+      "Resource":["arn:aws:s3:::ktb9-bucket/*"]
+    }
+  ]
+}
+POLICY
+}
+
+module "rds_instance" {
+  source = "./modules/rds"
+  
+  subnet_group_name = var.subnet_group_name
+  subnet_ids = module.vpc.private_subnets
+  allocated_storage = 20
+  engine = var.engine
+  engine_version = "8.0"
+  instance_class = "db.t3.micro"
+  db_identifier  = var.db_identifier
+  db_name = var.db_name
+  username = var.username
+  password = var.password
+  vpc_security_group_ids = [module.security_groups.rds_security_group_id]  # 보안 그룹 ID 추가
+}
+
