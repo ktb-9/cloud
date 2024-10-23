@@ -3,7 +3,7 @@ resource "aws_eks_cluster" "eks_cluster" {
   role_arn = var.cluster_role_arn
 
   vpc_config {
-    subnet_ids = var.public_subnets
+    subnet_ids = var.private_subnets
     security_group_ids = [var.cluster_security_group]
 #     endpoint_public_access = true      # 퍼블릭 접근 활성화
 #     endpoint_private_access = true      # 프라이빗 접근 활성화
@@ -35,7 +35,7 @@ resource "aws_eks_node_group" "eks_node_group" {
   cluster_name    = aws_eks_cluster.eks_cluster.name
   node_group_name = "${var.cluster_name}-node-group"
   node_role_arn   = var.node_role_arn
-  subnet_ids         = var.public_subnets
+  subnet_ids         = var.private_subnets
 
   capacity_type   = "ON_DEMAND"
   disk_size       = 20
