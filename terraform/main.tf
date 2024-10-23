@@ -27,7 +27,6 @@ module "security_groups" {
 module "eks" {
   source          = "./modules/eks"
   cluster_name    = var.cluster_name
-  cluster_version = "1.30"
 
   vpc_id          = module.vpc.vpc_id
   public_subnets = module.vpc.public_subnets
@@ -37,12 +36,6 @@ module "eks" {
   node_role_arn    = module.iam_roles.eks_node_group_role_arn
 
   cluster_security_group = module.security_groups.eks_cluster_security_group_id
-  node_security_group    = module.security_groups.eks_node_group_security_group_id
-
-  desired_capacity = 1
-  min_capacity     = 1
-  max_capacity     = 3
-  instance_type    = "t3.micro"
 }
 
 module "s3_bucket" {

@@ -6,7 +6,7 @@ variable "cluster_name" {
 variable "cluster_version" {
   description = "The version of the EKS cluster"
   type        = string
-  default     = "1.25"
+  default     = "1.31"
 }
 
 variable "vpc_id" {
@@ -37,7 +37,7 @@ variable "node_role_arn" {
 variable "desired_capacity" {
   description = "The desired number of worker nodes"
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "min_capacity" {
@@ -57,14 +57,9 @@ variable "instance_type" {
   type        = string
   default     = "t3.medium"
 }
+
 # 클러스터 보안 그룹
 variable "cluster_security_group" {
   description = "Security group ID for the EKS cluster"
-  type        = string
-}
-
-# 노드 그룹 보안 그룹
-variable "node_security_group" {
-  description = "Security group ID for the EKS node group"
   type        = string
 }
