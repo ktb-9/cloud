@@ -73,16 +73,16 @@ POLICY
 module "rds_instance" {
   source = "./modules/rds"
   
-  subnet_group_name = "ktb9-rds-subnet-group"
+  subnet_group_name = var.subnet_group_name
   subnet_ids = module.vpc.private_subnets
   allocated_storage = 20
-  engine = "mysql"
+  engine = var.engine
   engine_version = "8.0"
   instance_class = "db.t3.micro"
-  db_identifier  = "ktb9-rds-instance" 
-  db_name = "ktb9db"
-  username = "ktb9"
-  password = "kakao99!!"
+  db_identifier  = var.db_identifier
+  db_name = var.db_name
+  username = var.username
+  password = var.password
   vpc_security_group_ids = [module.security_groups.rds_security_group_id]  # 보안 그룹 ID 추가
 }
 
