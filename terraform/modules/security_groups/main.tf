@@ -26,42 +26,6 @@ resource "aws_security_group" "eks_cluster_sg" {
   }
 }
 
-# EKS 노드 그룹용 보안 그룹
-resource "aws_security_group" "eks_node_group_sg" {
-  vpc_id = var.vpc_id
-
-  name        = "${var.cluster_name}-node-group-sg"
-  description = "Security group for EKS worker nodes"
-
-  # 노드 그룹에서 API 서버로의 통신을 허용
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # 노드 간 통신을 허용 (1025-65535 포트)
-  ingress {
-    from_port   = 1025
-    to_port     = 65535
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  # 노드 그룹의 아웃바운드 트래픽 (모든 아웃바운드 허용)
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "${var.cluster_name}-node-group-sg"
-  }
-}
-
 resource "aws_security_group" "rds_sg" {
   vpc_id = var.vpc_id
 

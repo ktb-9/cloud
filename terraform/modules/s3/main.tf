@@ -1,7 +1,3 @@
-provider "aws" {
-  region = "ap-northeast-2"
-}
-
 resource "aws_s3_bucket" "ktb9_bucket" {
   bucket = "ktb9-bucket"  # 버킷 이름을 "ktb9-bucket"으로 변경
 
