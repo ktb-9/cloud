@@ -80,3 +80,19 @@ variable "password" {
   description = "The password for the RDS database"
   type        = string
 }
+
+variable "ec2_instance_type" {
+  description = "The type of instance to use"
+  default     = "t2.micro"
+}
+
+variable "ami" {
+  description = "The AMI to use for the instances"
+  default     = "ami-02c329a4b4aba6a48"
+}
+
+variable "key_name" {
+  description = "The name of the SSH key pair to use for the instance"
+  type        = string
+  default     = "ktb9-travel-key"
+}

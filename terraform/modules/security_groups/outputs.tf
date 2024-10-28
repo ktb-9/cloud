@@ -8,3 +8,7 @@ output "rds_security_group_id" {
   value       = aws_security_group.rds_sg.id
 }
 
+output "ec2_instance_security_group_id" {
+  description = "The security group ID for EC2 instance"
+  value = aws_security_group.ec2_sg.id
+}

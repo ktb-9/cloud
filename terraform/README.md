@@ -27,11 +27,11 @@ terraform/
 ├── terraform.tfvars
 ├── terraform.tfstate
 └── modules/
-    ├── vpc/
+    ├── ec2/
     │   ├── main.tf
     │   ├── variables.tf
     │   └── outputs.tf
-    ├── security_groups/
+    ├── eks/
     │   ├── main.tf
     │   ├── variables.tf
     │   └── outputs.tf
@@ -39,7 +39,19 @@ terraform/
     │   ├── main.tf
     │   ├── variables.tf
     │   └── outputs.tf
-    └── eks/
+    ├── rds/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    ├── s3/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    ├── security_groups/
+    │   ├── main.tf
+    │   ├── variables.tf
+    │   └── outputs.tf
+    └── vpc/
         ├── main.tf
         ├── variables.tf
         └── outputs.tf

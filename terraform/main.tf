@@ -1,6 +1,13 @@
 provider "aws" {
   profile = "ktb-9"
   region  = var.region
+  # 디폴트 태그 설정
+  default_tags {
+    tags = {
+      Service    = "ktb9-travel"      # 서비스 이름
+      Environment = "Prod"             # Dev, Stage, Prod 중 선택
+    }
+  }
 }
 
 module "iam_roles" {
@@ -65,7 +72,7 @@ POLICY
 
 module "rds_instance" {
   source = "./modules/rds"
-  
+
   subnet_group_name = var.subnet_group_name
   subnet_ids = module.vpc.private_subnets
   allocated_storage = 20
@@ -79,3 +86,11 @@ module "rds_instance" {
   vpc_security_group_ids = [module.security_groups.rds_security_group_id]  # 보안 그룹 ID 추가
 }
 
+module "ec2" {
+  source               = "./modules/ec2"
+  ec2_instance_type        = var.ec2_instance_type
+  ami               = var.ami
+  subnet_id            = module.vpc.public_subnets[0]
+  instance_security_group   = module.security_groups.ec2_instance_security_group_id
+  key_name             = var.key_name
+}
