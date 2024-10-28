@@ -1,6 +1,13 @@
 provider "aws" {
   profile = "ktb-9"
   region  = var.region
+  # 디폴트 태그 설정
+  default_tags {
+    tags = {
+      Service    = "ktb9-travel"      # 서비스 이름
+      Environment = "Prod"             # Dev, Stage, Prod 중 선택
+    }
+  }
 }
 
 module "iam_roles" {
