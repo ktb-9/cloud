@@ -51,3 +51,55 @@ resource "aws_security_group" "rds_sg" {
     Name = "${var.cluster_name}-rds-sg"
   }
 }
+
+# EC2 인스턴스용 보안 그룹
+resource "aws_security_group" "ec2_sg" {
+  vpc_id = var.vpc_id
+
+  name        = "${var.cluster_name}-ec2-sg"
+  description = "Security group for EC2 instance"
+
+  # SSH 접근 허용 (포트 22)
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Jenkins 웹 인터페이스 접근 허용 (포트 8080)
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # HTTP 접근 허용 (포트 80)
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # EKS 클러스터 API 서버와의 통신 허용 (포트 443)
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # 모든 아웃바운드 트래픽 허용
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.cluster_name}-ec2-sg"
+  }
+}
