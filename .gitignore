@@ -64,3 +64,4 @@ hosts.ini
 ### Environment Variables ###
 .env
 .env.*
+*secret*.yaml
