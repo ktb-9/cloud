@@ -1,0 +1,4 @@
+cluster_name: ktb9-eks-cluster
+aws_profile: ktb-9
+aws_account_id: 975050349156
+aws_region: ap-northeast-2

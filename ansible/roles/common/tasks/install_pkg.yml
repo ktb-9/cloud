@@ -1,0 +1,60 @@
+# helm 설치
+---
+# roles/common/tasks/main.yaml
+
+- name: Install kubectl
+  command: >
+    curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" &&
+    chmod +x kubectl &&
+    mv kubectl /usr/local/bin/
+
+- name: Install eksctl
+  command: >
+    curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp &&
+    mv /tmp/eksctl /usr/local/bin
+
+- name: Install AWS CLI
+  command: >
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" &&
+    unzip awscliv2.zip &&
+    ./aws/install
+
+- name: Configure AWS CLI with profile
+  command: aws configure --profile {{ aws_profile }}
+  environment:
+    AWS_ACCESS_KEY_ID: "{{ aws_access_key_id }}"
+    AWS_SECRET_ACCESS_KEY: "{{ aws_secret_access_key }}"
+    AWS_REGION: "{{ aws_region }}"
+
+- name: Configure kubectl with EKS cluster
+  command: aws eks --region {{ aws_region }} --profile {{ aws_profile }} update-kubeconfig --name {{ eks_cluster_name }} --alias {{ eks_cluster_alias }}
+
+- name: Verify connection to Kubernetes cluster
+  command: kubectl get nodes
+
+- name: Install Helm
+  command: >
+    curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 &&
+    chmod 700 get_helm.sh &&
+    ./get_helm.sh
+
+- name: Verify Helm installation
+  command: helm version
+
+- name: Create Helm chart directory for travel service
+  command: helm create /home/ec2-user/travel
+
+
+- name: Create Helm chart for travel
+  command: helm create travel
+  args:
+    chdir: /home/ec2-user
+
+- name: Update directory structure for travel service
+  copy:
+    dest: /home/ec2-user/travel/templates/
+    content: |
+      ---
+      # 템플릿 파일들을 수정하여 작성
+      # 예시: server-deployment.yaml, server-service.yaml
+
