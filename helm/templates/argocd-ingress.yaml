@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-ingress
+  namespace: argocd
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/group.name: argo-group
+    alb.ingress.kubernetes.io/group.order: '1'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/security-groups: ${SECURITY_GROUP_ID}  # 보안 그룹 ID로 대체
+    alb.ingress.kubernetes.io/manage-backend-security-group-rules: "true"
+    alb.ingress.kubernetes.io/certificate-arn: ${CERTIFICATE_ARN}  # ACM 인증서 ARN으로 대체
+spec:
+  ingressClassName: alb  # ALB를 사용하기 위해 ingressClassName을 alb로 설정
+  rules:
+    - host: argocd.zero-dang.com  # 연결하고자 하는 도메인
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 80

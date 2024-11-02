@@ -1,0 +1,45 @@
+# swap 설정
+---
+
+- name: Check current memory status
+  command: free -h
+  register: memory_status
+
+- name: Create swap directory if not exists
+  file:
+    path: /var/spool/swap
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Create swap file
+  command: dd if=/dev/zero of=/var/spool/swap/swapfile count=2048000 bs=1024
+  args:
+    creates: /var/spool/swap/swapfile
+
+- name: Set permissions on swap file
+  file:
+    path: /var/spool/swap/swapfile
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Make swap file
+  command: mkswap /var/spool/swap/swapfile
+
+- name: Enable swap file
+  command: swapon /var/spool/swap/swapfile
+
+- name: Add swap entry to fstab
+  lineinfile:
+    path: /etc/fstab
+    line: '/var/spool/swap/swapfile    none    swap    defaults    0 0'
+    state: present
+
+- name: Verify memory status after swap setup
+  command: free -h
+  register: memory_status_after
+
+- debug:
+    msg: "Memory status before swap setup: {{ memory_status.stdout_lines }}\nMemory status after swap setup: {{ memory_status_after.stdout_lines }}"

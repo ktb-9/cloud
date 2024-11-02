@@ -1,0 +1,47 @@
+# Ingress 설정
+---
+- name: Load variables from vars file
+  include_vars: ../../vars/aws_vars.yml
+
+- name: Create ArgoCD directory
+  file:
+    path: /home/ec2-user/argocd
+    state: directory
+
+- name: Create Ingress YAML for ArgoCD
+  copy:
+    dest: /home/ec2-user/argocd/argocd-ingress.yaml
+    content: |
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: argocd-ingress
+        namespace: argocd
+        annotations:
+          alb.ingress.kubernetes.io/scheme: internet-facing
+          alb.ingress.kubernetes.io/target-type: ip
+          alb.ingress.kubernetes.io/group.name: argo-group
+          alb.ingress.kubernetes.io/group.order: '1'
+          alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+          alb.ingress.kubernetes.io/security-groups: {{ security_group_id }}
+          alb.ingress.kubernetes.io/manage-backend-security-group-rules: "true"
+          alb.ingress.kubernetes.io/certificate-arn: {{ acm_certificate_arn }}
+      spec:
+        ingressClassName: alb
+        rules:
+          - host: {{ argocd_domain }}
+            http:
+              paths:
+                - path: /
+                  pathType: Prefix
+                  backend:
+                    service:
+                      name: argocd-server
+                      port:
+                        number: 80
+
+- name: Apply Ingress YAML for ArgoCD
+  command: kubectl apply -f /home/ec2-user/argocd/argocd-ingress.yaml
+
+- name: Wait for Ingress to be available
+  command: kubectl wait --namespace argocd --for=condition=available --timeout=600s ingress/argocd-ingress

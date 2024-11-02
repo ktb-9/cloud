@@ -1,0 +1,47 @@
+- name: Common configuration and package installations
+  hosts: all
+  become: true
+  roles:
+    - role: common
+      tags: ['common']
+
+- name: Configure and install necessary packages
+  hosts: all
+  become: true
+  tasks:
+    - name: Include install package tasks
+      include_tasks: "roles/common/tasks/install_pkg.yml"
+      tags: ['install_pkg']
+
+- name: Setup swap configuration
+  hosts: all
+  become: true
+  tasks:
+    - name: Include swap setup tasks
+      include_tasks: "roles/common/tasks/config.yml"
+      tags: ['config']
+
+- name: Install ArgoCD using Helm
+  hosts: all
+  become: true
+  roles:
+    - role: argocd
+      tags: ['argocd_install']
+
+- name: Install AWS Load Balancer Controller
+  hosts: all
+  become: true
+  roles:
+    - role: aws
+      tags: ['aws_lbc']
+      tasks:
+        - include_tasks: "tasks/lbc.yml"
+
+- name: Setup ArgoCD Ingress using ALB
+  hosts: all
+  become: true
+  roles:
+    - role: aws
+      tags: ['aws_ingress']
+      tasks:
+        - include_tasks: "tasks/ingress.yaml"

@@ -1,0 +1,48 @@
+# ArgoCD 설치
+- name: Add Helm repository for ArgoCD
+  command: "helm repo add argocd https://argoproj.github.io/argo-helm"
+  register: helm_repo_add
+  failed_when: helm_repo_add.rc not in [0, 1]
+  changed_when: helm_repo_add.rc == 0
+
+- name: Update Helm repositories
+  command: "helm repo update"
+
+- name: Create directory for ArgoCD values.yaml
+  file:
+    path: /home/ec2-user/argocd
+    state: directory
+    owner: ec2-user
+    group: ec2-user
+    mode: '0755'
+
+- name: Fetch default values.yaml for ArgoCD
+  command: "helm show values argo/argo-cd > /home/ec2-user/argocd/argocd-values.yaml"
+
+- name: Set server insecure mode in values.yaml
+  lineinfile:
+    path: /home/ec2-user/argocd/argocd-values.yaml
+    regexp: '^server\.insecure: false'
+    line: 'server.insecure: true'
+
+- name: Create namespace for ArgoCD
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: argocd
+
+- name: Install ArgoCD with Helm
+  command: "helm install -n argocd argocd argo/argo-cd -f /home/ec2-user/argocd/argocd-values.yaml"
+
+- name: Verify ArgoCD installation
+  kubernetes.core.k8s_info:
+    kind: Pod
+    namespace: argocd
+  register: argo_pods
+
+- name: Display ArgoCD Pod Status
+  debug:
+    var: argo_pods.resources
